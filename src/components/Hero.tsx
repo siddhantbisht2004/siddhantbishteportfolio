@@ -2,6 +2,7 @@
 import React from 'react';
 import { ArrowDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import CircularAvatar from './CircularAvatar';
 
 const Hero = () => {
   return (
@@ -20,12 +21,11 @@ const Hero = () => {
 
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="mb-8 animate-fade-in opacity-0" style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}>
-          <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-primary mx-auto overflow-hidden">
-            {/* Placeholder for profile image */}
-            <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-xl font-bold">
-              SB
-            </div>
-          </div>
+          <CircularAvatar 
+            initials="SB" 
+            size="xl" 
+            className="mx-auto"
+          />
         </div>
 
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 animate-fade-in opacity-0" style={{ animationDelay: "0.4s", animationFillMode: "forwards" }}>
