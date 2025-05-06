@@ -66,6 +66,9 @@ const VideoSection = () => {
   const [videos, setVideos] = useState<Array<{src: string; title: string}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Your Google Drive folder URL - replace this with your actual Google Drive folder URL
+  const googleDriveUrl = "https://drive.google.com/drive/folders/";
+
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     
@@ -100,6 +103,11 @@ const VideoSection = () => {
     newVideos.splice(index, 1);
     setVideos(newVideos);
     toast.success("Video removed");
+  };
+
+  const handleOpenGoogleDrive = () => {
+    window.open(googleDriveUrl, "_blank");
+    toast.info("Opening Google Drive...");
   };
 
   return (
@@ -137,19 +145,19 @@ const VideoSection = () => {
               <Video className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-xl font-medium mb-2">No videos yet</h3>
               <p className="text-muted-foreground mb-6">
-                Upload your first video to get started
+                Click below to access your Google Drive videos
               </p>
             </div>
           )}
 
           <div className="text-center mt-8">
             <Button 
-              onClick={() => fileInputRef.current?.click()}
+              onClick={handleOpenGoogleDrive}
               size="lg"
               className="gap-2"
             >
               <Upload size={18} />
-              Upload Video
+              Access Google Drive Videos
             </Button>
             <input
               type="file"
