@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Code, Html, Github } from 'lucide-react';
+import { Code, Github } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 const skillCategories = [
@@ -16,8 +16,8 @@ const skillCategories = [
   {
     title: 'Web Development',
     skills: [
-      { name: 'HTML', level: 90, icon: Html },
-      { name: 'CSS', level: 85, icon: Html },
+      { name: 'HTML', level: 90, icon: Code },
+      { name: 'CSS', level: 85, icon: Code },
       { name: 'JavaScript', level: 75, icon: Code }
     ]
   },
