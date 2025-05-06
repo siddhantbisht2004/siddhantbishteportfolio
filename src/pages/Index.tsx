@@ -19,7 +19,9 @@ const Index = () => {
       <Skills />
       <Projects />
       <Services />
-      <VideoSection />
+      <div id="videos">
+        <VideoSection />
+      </div>
       <Contact />
       <Footer />
     </div>

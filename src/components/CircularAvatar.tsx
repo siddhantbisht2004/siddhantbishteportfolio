@@ -42,8 +42,12 @@ const CircularAvatar = ({ initials, size = "lg", className = "" }: CircularAvata
     reader.readAsDataURL(file);
   };
   
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
+  const handleUploadClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   return (

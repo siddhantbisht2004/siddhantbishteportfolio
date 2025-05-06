@@ -27,6 +27,19 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNavLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+    
+    const element = document.querySelector(href);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      
+      // Update URL without page reload
+      window.history.pushState(null, '', href);
+    }
+  };
+
   return (
     <header className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
@@ -35,7 +48,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-            <a href="#home" className="text-xl font-bold text-white">
+            <a href="#home" className="text-xl font-bold text-white" onClick={(e) => handleNavLinkClick(e, '#home')}>
               <span className="text-primary">S</span>iddhant
             </a>
           </div>
@@ -47,6 +60,7 @@ const Navbar = () => {
                 <li key={link.name}>
                   <a 
                     href={link.href}
+                    onClick={(e) => handleNavLinkClick(e, link.href)}
                     className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
                   >
                     {link.name}
@@ -77,7 +91,7 @@ const Navbar = () => {
               <a
                 key={link.name}
                 href={link.href}
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => handleNavLinkClick(e, link.href)}
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white transition-colors"
               >
                 {link.name}
