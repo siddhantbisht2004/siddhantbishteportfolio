@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import CircularAvatar from './CircularAvatar';
 
 const Hero = () => {
-  const profileImageUrl = "https://photos.app.goo.gl/AXmwDY46HHjt6QMm6";
+  // Using a direct image URL instead of the Google Photos sharing link
+  const profileImageUrl = "https://lh3.googleusercontent.com/pw/AP1GczOX_WGKD9HLA_6AxOGcJ5TdorFZhiHWCqPcGS0TULe8GtQ_2EkA0tRzaX0kPcM4RWBcZzFIjWLQXiLwTrTQMI8fWNy7OJrA3nTxoVhgX_UP25K9_rpk=w2400"; 
   
   return (
     <section 
