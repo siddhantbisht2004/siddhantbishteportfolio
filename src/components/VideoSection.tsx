@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Video, Upload, Play } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -66,8 +65,8 @@ const VideoSection = () => {
   const [videos, setVideos] = useState<Array<{src: string; title: string}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Your Google Drive folder URL - replace this with your actual Google Drive folder URL
-  const googleDriveUrl = "https://drive.google.com/drive/folders/";
+  // Updated Google Drive folder URL with the user's specific link
+  const googleDriveUrl = "https://drive.google.com/drive/folders/1Bn_eeitFecn3mlexc0ronGsxIK83P7j-?usp=drive_link";
 
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
