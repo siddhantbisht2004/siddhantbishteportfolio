@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Upload } from 'lucide-react';
@@ -9,11 +9,19 @@ interface CircularAvatarProps {
   initials: string;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  image?: string;
 }
 
-const CircularAvatar = ({ initials, size = "lg", className = "" }: CircularAvatarProps) => {
-  const [image, setImage] = useState<string | null>(null);
+const CircularAvatar = ({ initials, size = "lg", className = "", image }: CircularAvatarProps) => {
+  const [loadedImage, setLoadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // When component mounts or image prop changes, set it as the loaded image
+  useEffect(() => {
+    if (image) {
+      setLoadedImage(image);
+    }
+  }, [image]);
   
   const sizeClasses = {
     sm: "w-16 h-16",
@@ -35,7 +43,7 @@ const CircularAvatar = ({ initials, size = "lg", className = "" }: CircularAvata
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target?.result) {
-        setImage(event.target.result as string);
+        setLoadedImage(event.target.result as string);
         toast.success("Profile picture updated!");
       }
     };
@@ -53,8 +61,8 @@ const CircularAvatar = ({ initials, size = "lg", className = "" }: CircularAvata
   return (
     <div className={`relative group ${className}`}>
       <Avatar className={`border-4 border-primary mx-auto overflow-hidden ${sizeClasses[size]}`}>
-        {image ? (
-          <AvatarImage src={image} alt="Profile" className="object-cover" />
+        {loadedImage ? (
+          <AvatarImage src={loadedImage} alt="Profile" className="object-cover" />
         ) : (
           <AvatarFallback className="bg-gradient-to-br from-gray-700 to-gray-900 text-xl font-bold flex items-center justify-center">
             {initials}

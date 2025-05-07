@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import CircularAvatar from './CircularAvatar';
 
 const Hero = () => {
+  const profileImageUrl = "https://photos.app.goo.gl/AXmwDY46HHjt6QMm6";
+  
   return (
     <section 
       id="home" 
@@ -25,6 +27,7 @@ const Hero = () => {
             initials="SB" 
             size="xl" 
             className="mx-auto"
+            image={profileImageUrl}
           />
         </div>
 
