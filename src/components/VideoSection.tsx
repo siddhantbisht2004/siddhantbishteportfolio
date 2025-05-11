@@ -1,6 +1,5 @@
-
 import React, { useState, useRef } from 'react';
-import { Video, Upload, Play, FileVideo, GoogleDrive } from 'lucide-react';
+import { Video, Upload, Play, FileVideo, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,13 +72,6 @@ const VideoSection = () => {
   // Updated Google Drive folder URL with the user's specific link
   // You can update this URL with your own Google Drive folder link
   const googleDriveUrl = "https://drive.google.com/drive/folders/1Bn_eeitFecn3mlexc0ronGsxIK83P7j-?usp=drive_link";
-
-  // Sample placeholder videos data
-  const placeholderVideos = Array.from({ length: 24 }, (_, i) => ({
-    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // Sample video source
-    title: `Video ${i + 1}`,
-    description: `This is a brief description for video ${i + 1}. Add details about what this video contains and why it's important.`
-  }));
   
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -122,9 +114,6 @@ const VideoSection = () => {
     toast.info("Opening Google Drive. Upload your videos there and they will appear in your video gallery.");
   };
 
-  // Combine user uploaded videos with placeholder videos
-  const allVideos = [...videos, ...placeholderVideos];
-
   return (
     <section id="videos" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -151,17 +140,17 @@ const VideoSection = () => {
         </div>
 
         <div className="max-w-5xl mx-auto">
-          {allVideos.length > 0 ? (
+          {videos.length > 0 ? (
             <Carousel className="mb-10">
               <CarouselContent>
-                {allVideos.map((video, index) => (
+                {videos.map((video, index) => (
                   <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                     <div className="p-1">
                       <VideoItem
                         src={video.src}
                         title={video.title}
                         description={video.description}
-                        onRemove={() => index < videos.length ? removeVideo(index) : null}
+                        onRemove={() => removeVideo(index)}
                       />
                     </div>
                   </CarouselItem>
@@ -190,7 +179,7 @@ const VideoSection = () => {
                 className="gap-2"
                 variant="default"
               >
-                <GoogleDrive size={18} />
+                <FileVideo size={18} />
                 Access Google Drive Videos
               </Button>
 
