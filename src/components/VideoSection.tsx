@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import { Video, Upload, Play, FileVideo, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
@@ -10,6 +11,12 @@ interface VideoItemProps {
   title: string;
   description?: string;
   onRemove: () => void;
+}
+
+interface StoredVideo {
+  src: string;
+  title: string;
+  description: string;
 }
 
 const VideoItem = ({ src, title, description, onRemove }: VideoItemProps) => {
@@ -73,6 +80,26 @@ const VideoSection = () => {
   // You can update this URL with your own Google Drive folder link
   const googleDriveUrl = "https://drive.google.com/drive/folders/1Bn_eeitFecn3mlexc0ronGsxIK83P7j-?usp=drive_link";
   
+  // Load videos from localStorage on component mount
+  useEffect(() => {
+    const storedVideos = localStorage.getItem('userVideos');
+    if (storedVideos) {
+      try {
+        const parsedVideos = JSON.parse(storedVideos);
+        setVideos(parsedVideos);
+      } catch (error) {
+        console.error('Error parsing stored videos:', error);
+      }
+    }
+  }, []);
+
+  // Save videos to localStorage whenever videos state changes
+  useEffect(() => {
+    if (videos.length > 0) {
+      localStorage.setItem('userVideos', JSON.stringify(videos));
+    }
+  }, [videos]);
+  
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     
@@ -89,7 +116,8 @@ const VideoSection = () => {
     // Get filename without extension as title
     const title = file.name.replace(/\.[^/.]+$/, "");
     
-    setVideos([...videos, { src: videoURL, title, description: "Newly uploaded video. Click to edit description." }]);
+    const newVideos = [...videos, { src: videoURL, title, description: "Newly uploaded video. Click to edit description." }];
+    setVideos(newVideos);
     toast.success("Video uploaded successfully!");
     
     // Reset the input
@@ -106,6 +134,14 @@ const VideoSection = () => {
     
     newVideos.splice(index, 1);
     setVideos(newVideos);
+    
+    // Update localStorage after removal
+    if (newVideos.length > 0) {
+      localStorage.setItem('userVideos', JSON.stringify(newVideos));
+    } else {
+      localStorage.removeItem('userVideos');
+    }
+    
     toast.success("Video removed");
   };
 
@@ -129,12 +165,12 @@ const VideoSection = () => {
             <h3 className="text-xl font-medium mb-3">Video Gallery</h3>
             <p className="text-base text-foreground/80 mb-4">
               Welcome to my video collection! Here you'll find tutorials, project demos, and educational content 
-              related to programming, technology, and my personal projects. Browse through the carousel to see all videos, 
-              or access my Google Drive for the complete collection with downloadable resources.
+              related to programming, technology, and my personal projects. Once uploaded, videos will remain in your gallery
+              even if you close the browser or refresh the page.
             </p>
             <div className="text-sm text-foreground/70 bg-background/50 p-3 rounded border border-border/30">
-              <strong>Note:</strong> To update videos, upload them to the connected Google Drive folder. 
-              Once uploaded, they will be automatically synced with this gallery on the next update.
+              <strong>Note:</strong> Videos you upload will be saved automatically and will be available the next time you visit.
+              You won't need to access Google Drive again unless you want to add new videos.
             </div>
           </div>
         </div>
