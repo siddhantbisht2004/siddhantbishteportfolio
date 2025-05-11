@@ -1,5 +1,6 @@
+
 import React, { useState, useRef } from 'react';
-import { Video, Upload, Play } from 'lucide-react';
+import { Video, Upload, Play, FileVideo } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,10 +9,11 @@ import { toast } from '@/components/ui/sonner';
 interface VideoItemProps {
   src: string;
   title: string;
+  description?: string;
   onRemove: () => void;
 }
 
-const VideoItem = ({ src, title, onRemove }: VideoItemProps) => {
+const VideoItem = ({ src, title, description, onRemove }: VideoItemProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -50,11 +52,14 @@ const VideoItem = ({ src, title, onRemove }: VideoItemProps) => {
           )}
         </div>
         
-        <div className="p-4 flex justify-between items-center">
+        <div className="p-4 flex flex-col gap-2">
           <h3 className="text-lg font-medium">{title}</h3>
-          <Button variant="ghost" size="sm" onClick={onRemove} className="text-destructive hover:text-destructive/80">
-            Remove
-          </Button>
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          <div className="flex justify-end">
+            <Button variant="ghost" size="sm" onClick={onRemove} className="text-destructive hover:text-destructive/80">
+              Remove
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -62,12 +67,19 @@ const VideoItem = ({ src, title, onRemove }: VideoItemProps) => {
 };
 
 const VideoSection = () => {
-  const [videos, setVideos] = useState<Array<{src: string; title: string}>>([]);
+  const [videos, setVideos] = useState<Array<{src: string; title: string; description: string}>>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Updated Google Drive folder URL with the user's specific link
   const googleDriveUrl = "https://drive.google.com/drive/folders/1Bn_eeitFecn3mlexc0ronGsxIK83P7j-?usp=drive_link";
 
+  // Sample placeholder videos data
+  const placeholderVideos = Array.from({ length: 24 }, (_, i) => ({
+    src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4", // Sample video source
+    title: `Video ${i + 1}`,
+    description: `This is a brief description for video ${i + 1}. Add details about what this video contains and why it's important.`
+  }));
+  
   const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     
@@ -84,7 +96,7 @@ const VideoSection = () => {
     // Get filename without extension as title
     const title = file.name.replace(/\.[^/.]+$/, "");
     
-    setVideos([...videos, { src: videoURL, title }]);
+    setVideos([...videos, { src: videoURL, title, description: "Newly uploaded video. Click to edit description." }]);
     toast.success("Video uploaded successfully!");
     
     // Reset the input
@@ -109,6 +121,9 @@ const VideoSection = () => {
     toast.info("Opening Google Drive...");
   };
 
+  // Combine user uploaded videos with placeholder videos
+  const allVideos = [...videos, ...placeholderVideos];
+
   return (
     <section id="videos" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -117,24 +132,37 @@ const VideoSection = () => {
             <Video className="inline-block mr-2 text-primary" />
             My Videos
           </h2>
-          <p className="text-muted-foreground">Check out my latest video content</p>
+          <p className="text-muted-foreground mb-6">Check out my latest video content</p>
+          
+          {/* Added detailed description */}
+          <div className="max-w-3xl mx-auto bg-secondary/20 p-6 rounded-lg border border-secondary/30 mb-8">
+            <h3 className="text-xl font-medium mb-3">Video Gallery</h3>
+            <p className="text-base text-foreground/80">
+              Welcome to my video collection! Here you'll find tutorials, project demos, and educational content 
+              related to programming, technology, and my personal projects. Browse through the carousel to see all videos, 
+              or access my Google Drive for the complete collection with downloadable resources.
+            </p>
+          </div>
         </div>
 
-        <div className="max-w-4xl mx-auto">
-          {videos.length > 0 ? (
+        <div className="max-w-5xl mx-auto">
+          {allVideos.length > 0 ? (
             <Carousel className="mb-10">
               <CarouselContent>
-                {videos.map((video, index) => (
-                  <CarouselItem key={index}>
-                    <VideoItem
-                      src={video.src}
-                      title={video.title}
-                      onRemove={() => removeVideo(index)}
-                    />
+                {allVideos.map((video, index) => (
+                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-1">
+                      <VideoItem
+                        src={video.src}
+                        title={video.title}
+                        description={video.description}
+                        onRemove={() => index < videos.length ? removeVideo(index) : null}
+                      />
+                    </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <div className="flex justify-center mt-4">
+              <div className="flex justify-center mt-6">
                 <CarouselPrevious className="relative static transform-none mx-2" />
                 <CarouselNext className="relative static transform-none mx-2" />
               </div>
