@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Github } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,7 @@ const projects = [
     tags: ['Python', 'ML', 'NLP'],
     status: 'Completed',
     links: {
-      github: '#',
-      demo: '#'
+      github: 'https://github.com/siddhantbisht2004/CSE-chatbot'
     }
   },
   {
@@ -22,7 +21,7 @@ const projects = [
     tags: ['Python', 'Security', 'Web'],
     status: 'In Progress',
     links: {
-      github: '#'
+      github: 'https://github.com/anshul-rautela/Cybershield'
     }
   },
   {
@@ -31,8 +30,7 @@ const projects = [
     tags: ['C', 'CLI', 'Data Structures'],
     status: 'Completed',
     links: {
-      github: '#',
-      demo: '#'
+      github: 'https://github.com/anshul-rautela/Text-Editor'
     }
   }
 ];
@@ -60,15 +58,9 @@ const ProjectCard = ({ project }: { project: typeof projects[0] }) => {
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-4 border-t border-muted">
         {project.links.github && (
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" as="a" href={project.links.github} target="_blank" rel="noopener noreferrer">
             <Github size={16} className="mr-1" />
             Code
-          </Button>
-        )}
-        {project.links.demo && (
-          <Button variant="ghost" size="sm" className="text-primary hover:text-primary/80">
-            <ExternalLink size={16} className="mr-1" />
-            Demo
           </Button>
         )}
       </CardFooter>
