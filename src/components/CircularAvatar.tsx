@@ -16,9 +16,12 @@ const CircularAvatar = ({ initials, size = "lg", className = "", image }: Circul
   const [loadedImage, setLoadedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // When component mounts or image prop changes, set it as the loaded image
+  // Load image from localStorage or props when component mounts
   useEffect(() => {
-    if (image) {
+    const savedImage = localStorage.getItem('userProfileImage');
+    if (savedImage) {
+      setLoadedImage(savedImage);
+    } else if (image) {
       setLoadedImage(image);
     }
   }, [image]);
@@ -43,7 +46,10 @@ const CircularAvatar = ({ initials, size = "lg", className = "", image }: Circul
     const reader = new FileReader();
     reader.onload = (event) => {
       if (event.target?.result) {
-        setLoadedImage(event.target.result as string);
+        const imageData = event.target.result as string;
+        setLoadedImage(imageData);
+        // Save to localStorage for persistence
+        localStorage.setItem('userProfileImage', imageData);
         toast.success("Profile picture updated!");
       }
     };
