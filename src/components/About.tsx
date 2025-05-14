@@ -1,7 +1,5 @@
 
 import React from 'react';
-import { FileText } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 const About = () => {
@@ -34,11 +32,6 @@ const About = () => {
                 </div>
               </div>
             </Card>
-            
-            <Button className="flex items-center gap-2">
-              <FileText size={18} />
-              Download Resume
-            </Button>
           </div>
           
           <div className="relative hidden md:block">
