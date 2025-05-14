@@ -18,11 +18,21 @@ const CircularAvatar = ({ initials, size = "lg", className = "", image }: Circul
   
   // Load image from localStorage or props when component mounts
   useEffect(() => {
-    const savedImage = localStorage.getItem('userProfileImage');
-    if (savedImage) {
-      setLoadedImage(savedImage);
-    } else if (image) {
-      setLoadedImage(image);
+    try {
+      const savedImage = localStorage.getItem('userProfileImage');
+      if (savedImage) {
+        setLoadedImage(savedImage);
+        console.log("Loaded image from localStorage");
+      } else if (image) {
+        setLoadedImage(image);
+        console.log("Used prop image as fallback");
+      }
+    } catch (error) {
+      console.error("Error loading image from localStorage:", error);
+      // Fallback to prop image if localStorage fails
+      if (image) {
+        setLoadedImage(image);
+      }
     }
   }, [image]);
   
@@ -47,10 +57,18 @@ const CircularAvatar = ({ initials, size = "lg", className = "", image }: Circul
     reader.onload = (event) => {
       if (event.target?.result) {
         const imageData = event.target.result as string;
-        setLoadedImage(imageData);
-        // Save to localStorage for persistence
-        localStorage.setItem('userProfileImage', imageData);
-        toast.success("Profile picture updated!");
+        try {
+          // Save to localStorage for persistence
+          localStorage.setItem('userProfileImage', imageData);
+          setLoadedImage(imageData);
+          toast.success("Profile picture updated!");
+          console.log("Image saved to localStorage");
+        } catch (error) {
+          console.error("Error saving to localStorage:", error);
+          toast.error("Failed to save image. It may not persist after refresh.");
+          // Still show the image for current session
+          setLoadedImage(imageData);
+        }
       }
     };
     reader.readAsDataURL(file);
