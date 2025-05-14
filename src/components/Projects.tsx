@@ -58,10 +58,12 @@ const ProjectCard = ({ project }: { project: typeof projects[0] }) => {
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-4 border-t border-muted">
         {project.links.github && (
-          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white" as="a" href={project.links.github} target="_blank" rel="noopener noreferrer">
-            <Github size={16} className="mr-1" />
-            Code
-          </Button>
+          <a href={project.links.github} target="_blank" rel="noopener noreferrer">
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+              <Github size={16} className="mr-1" />
+              Code
+            </Button>
+          </a>
         )}
       </CardFooter>
     </Card>
