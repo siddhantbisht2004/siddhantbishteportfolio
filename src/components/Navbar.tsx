@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const navLinks = [
   { name: 'Home', href: '#home' },
@@ -67,6 +67,11 @@ const Navbar = () => {
                   </a>
                 </li>
               ))}
+              <li>
+                <Link to="/profiling-sheet" className="text-foreground/80 hover:text-primary transition-colors">
+                  Profiling Sheet
+                </Link>
+              </li>
             </ul>
           </nav>
           
