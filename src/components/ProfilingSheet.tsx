@@ -170,6 +170,14 @@ const questions = [
   { id: 9, text: "Apart from academics, what else are you interested in? Make a separate list in terms of extracurricular activities, sports and any other interests." },
   { id: 10, text: "Give an example of an area, concept or thing that you are absolutely passionate about." },
   { id: 11, text: "Describe yourself as an individual in 5 lines.", videoRequired: false },
+  { id: 12, text: "What kinds of people do you enjoy working with?" },
+  { id: 13, text: "What kinds of people you don't want to work with? What would you do if they became your senior in your dream job?" },
+  { id: 14, text: "What do you expect from your first job? Prioritize and write in order." },
+  { id: 15, text: "In the past year, what have you been dissatisfied about in your performance?" },
+  { id: 16, text: "Rate yourself out of 5 in verbal communication. What are you doing to improve your communication skills?" },
+  { id: 17, text: "Who is your role model? What qualities of that person you would like to see in your personality and why?" },
+  { id: 18, text: "Write a few lines about your friends. Do you think they help/ may help you in achieving your goals? If yes, how? If no, why do you accompany them?" },
+  { id: 19, text: "Write 3 leadership qualities. How many do you possess? Write an instance where you have applied those qualities." },
 ];
 
 const ProfilingSheet = () => {
