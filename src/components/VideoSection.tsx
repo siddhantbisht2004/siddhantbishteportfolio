@@ -41,7 +41,7 @@ const VideoItem = ({ src, title, description, onRemove }: VideoItemProps) => {
           <video
             ref={videoRef}
             src={src}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             onEnded={() => setIsPlaying(false)}
           />
           {!isPlaying && (

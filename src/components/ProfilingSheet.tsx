@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -101,7 +102,7 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
                 <video
                   ref={videoRef}
                   src={videoUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onEnded={() => setIsPlaying(false)}
                 />
                 {!isPlaying && (
@@ -240,7 +241,7 @@ const MovieReviewQuestion = ({ number, question }: { number: number, question: s
               <video
                 ref={videoRef}
                 src={videoUrl}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 onEnded={() => setIsPlaying(false)}
               />
               {!isPlaying && (

@@ -86,7 +86,7 @@ const About = () => {
                     <video
                       ref={videoRef}
                       src={introVideo}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       onEnded={() => setIsPlaying(false)}
                     />
                     {!isPlaying && (
