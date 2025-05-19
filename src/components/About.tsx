@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload, Play, VideoOff } from "lucide-react";
@@ -12,7 +12,7 @@ const About = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Load saved video on component mount
-  React.useEffect(() => {
+  useEffect(() => {
     const savedVideo = localStorage.getItem('intro_video');
     if (savedVideo) setIntroVideo(savedVideo);
   }, []);
@@ -34,6 +34,11 @@ const About = () => {
     // Save to localStorage
     localStorage.setItem('intro_video', videoURL);
     toast.success("Introduction video uploaded successfully!");
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const togglePlay = () => {
@@ -41,10 +46,37 @@ const About = () => {
       if (isPlaying) {
         videoRef.current.pause();
       } else {
-        videoRef.current.play();
+        // Add error handling for video playback
+        const playPromise = videoRef.current.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              setIsPlaying(true);
+              console.log("Video playback started successfully");
+            })
+            .catch(error => {
+              console.error("Error playing video:", error);
+              toast.error("Unable to play video. Please try uploading again.");
+              setIsPlaying(false);
+            });
+        }
       }
-      setIsPlaying(!isPlaying);
     }
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    console.log("Video playback ended");
+  };
+
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    console.error("Video error occurred:", e);
+    toast.error("Error loading video. Please try uploading again.");
+    // Clear problematic video
+    if (introVideo) URL.revokeObjectURL(introVideo);
+    setIntroVideo(null);
+    localStorage.removeItem('intro_video');
   };
 
   return (
@@ -87,7 +119,9 @@ const About = () => {
                       ref={videoRef}
                       src={introVideo}
                       className="w-full h-full object-contain"
-                      onEnded={() => setIsPlaying(false)}
+                      onEnded={handleVideoEnded}
+                      onError={handleVideoError}
+                      controls
                     />
                     {!isPlaying && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
