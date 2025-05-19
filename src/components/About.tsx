@@ -2,81 +2,41 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Play, VideoOff } from "lucide-react";
+import { Upload, VideoOff, Youtube } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
+import { Input } from "@/components/ui/input";
+import YouTubeEmbed from './YouTubeEmbed';
+import { isValidYouTubeUrl } from '@/utils/youtube';
 
 const About = () => {
   const [introVideo, setIntroVideo] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Load saved video on component mount
   useEffect(() => {
-    const savedVideo = localStorage.getItem('intro_video');
+    const savedVideo = localStorage.getItem('intro_youtube_url');
     if (savedVideo) setIntroVideo(savedVideo);
   }, []);
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    
-    if (!file) return;
-    
-    if (!file.type.match('video.*')) {
-      toast.error("Please select a video file");
+  const handleYoutubeUrlSubmit = () => {
+    if (!youtubeUrl.trim()) {
+      toast.error("Please enter a YouTube URL");
       return;
     }
     
-    // Generate a local URL for the video
-    const videoURL = URL.createObjectURL(file);
-    setIntroVideo(videoURL);
+    if (!isValidYouTubeUrl(youtubeUrl)) {
+      toast.error("Please enter a valid YouTube URL");
+      return;
+    }
     
-    // Save to localStorage
-    localStorage.setItem('intro_video', videoURL);
-    toast.success("Introduction video uploaded successfully!");
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        // Add error handling for video playback
-        const playPromise = videoRef.current.play();
-        
-        if (playPromise !== undefined) {
-          playPromise
-            .then(() => {
-              setIsPlaying(true);
-              console.log("Video playback started successfully");
-            })
-            .catch(error => {
-              console.error("Error playing video:", error);
-              toast.error("Unable to play video. Please try uploading again.");
-              setIsPlaying(false);
-            });
-        }
-      }
-    }
-  };
-
-  const handleVideoEnded = () => {
-    setIsPlaying(false);
-    console.log("Video playback ended");
-  };
-
-  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
-    console.error("Video error occurred:", e);
-    toast.error("Error loading video. Please try uploading again.");
-    // Clear problematic video
-    if (introVideo) URL.revokeObjectURL(introVideo);
-    setIntroVideo(null);
-    localStorage.removeItem('intro_video');
+    // Save the YouTube URL
+    setIntroVideo(youtubeUrl);
+    localStorage.setItem('intro_youtube_url', youtubeUrl);
+    toast.success("Introduction video added successfully!");
+    
+    // Clear the input
+    setYoutubeUrl('');
   };
 
   return (
@@ -114,35 +74,15 @@ const About = () => {
               <h3 className="text-xl font-semibold mb-4">My Introduction</h3>
               <div className="space-y-4">
                 {introVideo ? (
-                  <div className="relative aspect-video bg-black/5 rounded-lg overflow-hidden">
-                    <video
-                      ref={videoRef}
-                      src={introVideo}
-                      className="w-full h-full object-contain"
-                      onEnded={handleVideoEnded}
-                      onError={handleVideoError}
-                      controls
-                    />
-                    {!isPlaying && (
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="rounded-full bg-primary text-white hover:bg-primary/80 w-12 h-12"
-                          onClick={togglePlay}
-                        >
-                          <Play size={24} />
-                        </Button>
-                      </div>
-                    )}
+                  <div className="relative bg-black/5 rounded-lg overflow-hidden">
+                    <YouTubeEmbed url={introVideo} />
                     <div className="absolute bottom-2 right-2">
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => {
-                          if (introVideo) URL.revokeObjectURL(introVideo);
                           setIntroVideo(null);
-                          localStorage.removeItem('intro_video');
+                          localStorage.removeItem('intro_youtube_url');
                           toast.success("Video removed successfully");
                         }}
                       >
@@ -152,25 +92,26 @@ const About = () => {
                   </div>
                 ) : (
                   <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center flex flex-col items-center justify-center">
-                    <VideoOff className="h-10 w-10 text-muted-foreground mb-3" />
-                    <p className="text-sm text-muted-foreground mb-4">No introduction video uploaded yet</p>
-                    <Button 
-                      onClick={() => fileInputRef.current?.click()}
-                      variant="outline"
-                      className="gap-2"
-                    >
-                      <Upload size={16} />
-                      Upload Introduction Video
-                    </Button>
+                    <Youtube className="h-10 w-10 text-muted-foreground mb-3" />
+                    <p className="text-sm text-muted-foreground mb-4">No introduction video added yet</p>
+                    <div className="flex flex-col w-full max-w-md gap-3">
+                      <Input
+                        placeholder="Paste YouTube video URL here"
+                        value={youtubeUrl}
+                        onChange={(e) => setYoutubeUrl(e.target.value)}
+                        ref={inputRef}
+                      />
+                      <Button 
+                        onClick={handleYoutubeUrlSubmit}
+                        variant="outline"
+                        className="gap-2"
+                      >
+                        <Youtube size={16} />
+                        Add YouTube Video
+                      </Button>
+                    </div>
                   </div>
                 )}
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  accept="video/*"
-                  className="hidden"
-                  onChange={handleVideoUpload}
-                />
               </div>
             </div>
           </div>

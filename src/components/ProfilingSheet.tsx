@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,8 @@ import * as z from "zod";
 import { toast } from "@/components/ui/sonner";
 import { VideoOff, Video, Upload, Play, FileVideo, Film, Star } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import YouTubeEmbed from './YouTubeEmbed';
+import { isValidYouTubeUrl } from '@/utils/youtube';
 
 interface QuestionProps {
   number: number;
@@ -22,14 +23,12 @@ interface QuestionProps {
 const Question = ({ number, question, videoRequired = true }: QuestionProps) => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [youtubeInput, setYoutubeInput] = useState("");
 
   // Load saved data on component mount
   React.useEffect(() => {
     const savedAnswer = localStorage.getItem(`q${number}_answer`);
-    const savedVideo = localStorage.getItem(`q${number}_video`);
+    const savedVideo = localStorage.getItem(`q${number}_youtube`);
     
     if (savedAnswer) setAnswer(savedAnswer);
     if (savedVideo) setVideoUrl(savedVideo);
@@ -41,34 +40,21 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
     localStorage.setItem(`q${number}_answer`, newAnswer);
   };
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    
-    if (!file) return;
-    
-    if (!file.type.match('video.*')) {
-      toast.error("Please select a video file");
+  const handleYoutubeSubmit = () => {
+    if (!youtubeInput.trim()) {
+      toast.error("Please enter a YouTube URL");
       return;
     }
     
-    // Generate a local URL for the video
-    const videoURL = URL.createObjectURL(file);
-    setVideoUrl(videoURL);
-    
-    // Save to localStorage (note: this stores the blob URL which may not persist across sessions)
-    localStorage.setItem(`q${number}_video`, videoURL);
-    toast.success("Video uploaded successfully!");
-  };
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!isValidYouTubeUrl(youtubeInput)) {
+      toast.error("Please enter a valid YouTube URL");
+      return;
     }
+    
+    setVideoUrl(youtubeInput);
+    localStorage.setItem(`q${number}_youtube`, youtubeInput);
+    toast.success("YouTube video added successfully!");
+    setYoutubeInput("");
   };
 
   return (
@@ -98,33 +84,16 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
           <div className="space-y-4">
             <Label className="block">Video Response:</Label>
             {videoUrl ? (
-              <div className="relative aspect-video bg-black/5 rounded-lg overflow-hidden">
-                <video
-                  ref={videoRef}
-                  src={videoUrl}
-                  className="w-full h-full object-contain"
-                  onEnded={() => setIsPlaying(false)}
-                />
-                {!isPlaying && (
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="rounded-full bg-primary text-white hover:bg-primary/80 w-12 h-12"
-                      onClick={togglePlay}
-                    >
-                      <Play size={24} />
-                    </Button>
-                  </div>
-                )}
+              <div className="relative bg-black/5 rounded-lg overflow-hidden">
+                <YouTubeEmbed url={videoUrl} />
                 <div className="absolute bottom-2 right-2">
                   <Button
                     variant="destructive"
                     size="sm"
                     onClick={() => {
-                      if (videoUrl) URL.revokeObjectURL(videoUrl);
                       setVideoUrl(null);
-                      localStorage.removeItem(`q${number}_video`);
+                      localStorage.removeItem(`q${number}_youtube`);
+                      toast.success("Video removed successfully");
                     }}
                   >
                     Remove Video
@@ -134,24 +103,24 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
             ) : (
               <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center flex flex-col items-center justify-center">
                 <VideoOff className="h-10 w-10 text-muted-foreground mb-3" />
-                <p className="text-sm text-muted-foreground mb-4">No video uploaded yet</p>
-                <Button 
-                  onClick={() => fileInputRef.current?.click()}
-                  variant="outline"
-                  className="gap-2"
-                >
-                  <Upload size={16} />
-                  Upload Video
-                </Button>
+                <p className="text-sm text-muted-foreground mb-4">No YouTube video added yet</p>
+                <div className="flex flex-col w-full max-w-md gap-3">
+                  <Input
+                    placeholder="Paste YouTube video URL here"
+                    value={youtubeInput}
+                    onChange={(e) => setYoutubeInput(e.target.value)}
+                  />
+                  <Button 
+                    onClick={handleYoutubeSubmit}
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Youtube size={16} />
+                    Add YouTube Video
+                  </Button>
+                </div>
               </div>
             )}
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="video/*"
-              className="hidden"
-              onChange={handleVideoUpload}
-            />
           </div>
         )}
       </CardContent>
@@ -162,14 +131,12 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
 const MovieReviewQuestion = ({ number, question }: { number: number, question: string }) => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [youtubeInput, setYoutubeInput] = useState("");
 
   // Load saved data on component mount
   React.useEffect(() => {
     const savedAnswer = localStorage.getItem(`movie_q${number}_answer`);
-    const savedVideo = localStorage.getItem(`movie_q${number}_video`);
+    const savedVideo = localStorage.getItem(`movie_q${number}_youtube`);
     
     if (savedAnswer) setAnswer(savedAnswer);
     if (savedVideo) setVideoUrl(savedVideo);
@@ -181,34 +148,21 @@ const MovieReviewQuestion = ({ number, question }: { number: number, question: s
     localStorage.setItem(`movie_q${number}_answer`, newAnswer);
   };
 
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    
-    if (!file) return;
-    
-    if (!file.type.match('video.*')) {
-      toast.error("Please select a video file");
+  const handleYoutubeSubmit = () => {
+    if (!youtubeInput.trim()) {
+      toast.error("Please enter a YouTube URL");
       return;
     }
     
-    // Generate a local URL for the video
-    const videoURL = URL.createObjectURL(file);
-    setVideoUrl(videoURL);
-    
-    // Save to localStorage
-    localStorage.setItem(`movie_q${number}_video`, videoURL);
-    toast.success("Video uploaded successfully!");
-  };
-
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    if (!isValidYouTubeUrl(youtubeInput)) {
+      toast.error("Please enter a valid YouTube URL");
+      return;
     }
+    
+    setVideoUrl(youtubeInput);
+    localStorage.setItem(`movie_q${number}_youtube`, youtubeInput);
+    toast.success("YouTube video added successfully!");
+    setYoutubeInput("");
   };
 
   return (
@@ -237,33 +191,16 @@ const MovieReviewQuestion = ({ number, question }: { number: number, question: s
         <div className="space-y-4">
           <Label className="block">Video Response:</Label>
           {videoUrl ? (
-            <div className="relative aspect-video bg-black/5 rounded-lg overflow-hidden">
-              <video
-                ref={videoRef}
-                src={videoUrl}
-                className="w-full h-full object-contain"
-                onEnded={() => setIsPlaying(false)}
-              />
-              {!isPlaying && (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full bg-primary text-white hover:bg-primary/80 w-12 h-12"
-                    onClick={togglePlay}
-                  >
-                    <Play size={24} />
-                  </Button>
-                </div>
-              )}
+            <div className="relative bg-black/5 rounded-lg overflow-hidden">
+              <YouTubeEmbed url={videoUrl} />
               <div className="absolute bottom-2 right-2">
                 <Button
                   variant="destructive"
                   size="sm"
                   onClick={() => {
-                    if (videoUrl) URL.revokeObjectURL(videoUrl);
                     setVideoUrl(null);
-                    localStorage.removeItem(`movie_q${number}_video`);
+                    localStorage.removeItem(`movie_q${number}_youtube`);
+                    toast.success("Video removed successfully");
                   }}
                 >
                   Remove Video
@@ -273,24 +210,24 @@ const MovieReviewQuestion = ({ number, question }: { number: number, question: s
           ) : (
             <div className="border-2 border-dashed border-primary/20 rounded-lg p-8 text-center flex flex-col items-center justify-center">
               <VideoOff className="h-10 w-10 text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground mb-4">No video uploaded yet</p>
-              <Button 
-                onClick={() => fileInputRef.current?.click()}
-                variant="outline"
-                className="gap-2"
-              >
-                <Upload size={16} />
-                Upload Video
-              </Button>
+              <p className="text-sm text-muted-foreground mb-4">No YouTube video added yet</p>
+              <div className="flex flex-col w-full max-w-md gap-3">
+                <Input
+                  placeholder="Paste YouTube video URL here"
+                  value={youtubeInput}
+                  onChange={(e) => setYoutubeInput(e.target.value)}
+                />
+                <Button 
+                  onClick={handleYoutubeSubmit}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <Youtube size={16} />
+                  Add YouTube Video
+                </Button>
+              </div>
             </div>
           )}
-          <input
-            type="file"
-            ref={fileInputRef}
-            accept="video/*"
-            className="hidden"
-            onChange={handleVideoUpload}
-          />
         </div>
       </CardContent>
     </Card>
