@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -107,7 +106,7 @@ const Question = ({ number, question, videoRequired = true }: QuestionProps) => 
                 <p className="text-sm text-muted-foreground mb-4">No YouTube video added yet</p>
                 <div className="flex flex-col w-full max-w-md gap-3">
                   <Input
-                    placeholder="Paste YouTube video URL here"
+                    placeholder="Paste YouTube video URL here (supports shorts)"
                     value={youtubeInput}
                     onChange={(e) => setYoutubeInput(e.target.value)}
                   />
@@ -302,8 +301,7 @@ const ProfilingSheet = () => {
                   key={q.id}
                   number={q.id}
                   question={q.text}
-                  videoRequired={true} 
-                  /* All questions now have video upload enabled */
+                  videoRequired={true}
                 />
               ))}
               

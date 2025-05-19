@@ -7,8 +7,9 @@
 export const extractYouTubeId = (url: string): string | null => {
   if (!url) return null;
   
-  // Regular expression to match YouTube video IDs from various URL formats
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  // Regular expression to match YouTube video IDs from various URL formats including shorts
+  // This now supports standard YouTube URLs, embedded URLs, and shorts URLs
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   
   return (match && match[2].length === 11) ? match[2] : null;
