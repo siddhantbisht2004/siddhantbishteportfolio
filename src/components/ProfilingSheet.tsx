@@ -302,7 +302,7 @@ const ProfilingSheet = () => {
                   key={q.id}
                   number={q.id}
                   question={q.text}
-                  videoRequired={q.id !== 11}
+                  videoRequired={true}  {/* Changed from q.id !== 11 to always true */}
                 />
               ))}
               
