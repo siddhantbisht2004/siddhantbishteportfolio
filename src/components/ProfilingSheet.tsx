@@ -302,7 +302,8 @@ const ProfilingSheet = () => {
                   key={q.id}
                   number={q.id}
                   question={q.text}
-                  videoRequired={true}  {/* Changed from q.id !== 11 to always true */}
+                  videoRequired={true} 
+                  /* All questions now have video upload enabled */
                 />
               ))}
               
