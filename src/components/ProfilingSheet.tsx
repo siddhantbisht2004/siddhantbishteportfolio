@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { toast } from "@/components/ui/sonner";
-import { VideoOff, Video, Upload, Play, FileVideo, Film, Star } from "lucide-react";
+import { VideoOff, Video, Upload, Play, FileVideo, Film, Star, Youtube } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import YouTubeEmbed from './YouTubeEmbed';
 import { isValidYouTubeUrl } from '@/utils/youtube';
